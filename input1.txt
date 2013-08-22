@@ -1,0 +1,7 @@
+BEGIN --something unusual
+	READ(A1,New_A,D,B);
+	C :=AT + (New_A- D) -75;
+	New_C:=((B - (7)+(C+D))) -(3 - A1) ; --stupid formula
+	WRITE (C,A1 +New_C);
+	-- what about := B+D;
+END
