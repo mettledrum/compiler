@@ -24,3 +24,9 @@ class StackViewer:
 			print self.spacing * self.indent_val, f_name, "OUT"
 			self.indent_val = self.indent_val - 1
 
+	def match_show(self, tok):
+		if self.switch:
+			self.indent_val = self.indent_val + 1
+			print self.spacing * self.indent_val, tok
+			self.indent_val = self.indent_val - 1
+

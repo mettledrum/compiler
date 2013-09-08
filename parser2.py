@@ -48,6 +48,9 @@ def Match(tok_str):
 	# next token
 	T_IDX = T_IDX + 1
 
+	# print token Match matched
+	VIEWER.match_show(cur_tok)
+
 	# view recursion
 	VIEWER.outa("Match")
 
@@ -298,6 +301,7 @@ def main():
 	f = open('input1.txt', 'r')
 	CODE_STR = f.read() + EOF
 
+	# show the code string from file
 	print CODE_STR
 
 	# go through and populate TOK_LIST GLOBAL, reset IDX GLOBALS to 0
@@ -306,6 +310,7 @@ def main():
 	IDX = 0
 	T_IDX = 0
 
+	# show the token list from file
 	print TOK_LIST
 
 	# run the ad hoc parser
