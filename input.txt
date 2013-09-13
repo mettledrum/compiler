@@ -1,0 +1,4 @@
+BEGIN
+A := BB + 314 + A;
+C := 342 - BB;
+END
