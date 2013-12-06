@@ -1,7 +1,14 @@
 Declare A, Integer
 Declare BB, Integer
-Declare C, Integer
 Declare Temp&1, Integer
-Sub BB, C, Temp&1
-Store  Temp&1, A
+Add 314, A, Temp&1
+Declare Temp&2, Integer
+Add BB, Temp&1, Temp&2
+Store  Temp&2, A
+Declare C, Integer
+Declare Temp&3, Integer
+Sub 2342, BB, Temp&3
+Declare Temp&4, Integer
+Sub 342, Temp&3, Temp&4
+Store  Temp&4, C
 Halt

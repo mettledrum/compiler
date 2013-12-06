@@ -193,9 +193,6 @@ def Match(leg_tok):
     VIEWER.into("Match")
 
     print "Match:\t", leg_tok, "=?", SEM_LIST[T_IDX], "\n"
-
-    # get token from scanner and declare GLOBAL token index
-    global T_IDX
     
     next_tok = TOK_LIST[T_IDX]
 
