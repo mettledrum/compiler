@@ -587,7 +587,7 @@ def main():
     global CODE_STR, IDX, T_IDX, SEM_LIST, OUT_FILE_NAME
 
     # get file info
-    in_file_name = 'bad_input1.txt' #raw_input("type name of input file: ")
+    in_file_name = raw_input("type name of input file: good_input.txt, bad_input1.txt, or bad_input2.txt -> ")
     fin = open(in_file_name, 'r')
     CODE_STR = fin.read() + EOF
 
