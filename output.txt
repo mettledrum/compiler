@@ -1,0 +1,7 @@
+Declare A, Integer
+Declare BB, Integer
+Declare C, Integer
+Declare Temp&1, Integer
+Sub BB, C, Temp&1
+Store  Temp&1, A
+Halt

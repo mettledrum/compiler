@@ -154,30 +154,76 @@ def ProcessOp(o):
 def Finish():
     Generate1("Halt")
 
+"""-----------------------------ERROR CORRECTION-----------------------------"""
+
+# uses sets 
+def CheckInput(vs, fs, hs):
+    global TOK_LIST, T_IDX
+    nt = TOK_LIST[T_IDX]
+    uni = vs | fs | hs
+
+    print "CHECK INPUT:\t", nt
+    print "ValidSet:\t", vs
+    print "UnionSet:\t", uni, "\n"
+
+    if nt in vs:
+        return
+    else:
+        print "CheckInput SyntaxError(", nt, ")"
+        while nt not in uni:
+            print "CheckIn skipping:", nt
+            Increm()
+            nt = TOK_LIST[T_IDX]
+        print ''
+
+# prevents index error
+def Increm():
+    global T_IDX
+    if T_IDX >= len(TOK_LIST)-1:
+        return
+    else:
+        T_IDX += 1
+
 """------------------------------PARSER-WITH-GENERATOR-----------------------"""
 
 # syntactic error checker for the parser
-def Match(tok_str):
+def Match(leg_tok):
+    global T_IDX
     # view recursion
     VIEWER.into("Match")
 
+    print "Match:\t", leg_tok, "=?", SEM_LIST[T_IDX], "\n"
+
     # get token from scanner and declare GLOBAL token index
     global T_IDX
-    cur_tok = Scanner()
+    
+    next_tok = TOK_LIST[T_IDX]
 
-    # exception handling
-    try:
-        if cur_tok not in LEGAL_TOKENS:
-            raise Exception(TOK_LIST[T_IDX])
-    except Exception as ex:
-        print "SyntaxError(", ex[0], ")"
-        raise
-            
-    # next token
-    T_IDX = T_IDX + 1
+    if next_tok == leg_tok:
+        cur_tok = TOK_LIST[T_IDX]
+        Increm()
 
-    # print token Match matched
-    VIEWER.match_show(cur_tok)
+    else:
+        cur_tok = leg_tok
+        print "Match SyntaxError(", next_tok, "!=", leg_tok, ")"
+
+        end_set = set(['EofSym', 'SemiColon'])
+
+        if leg_tok in end_set:
+            Increm()
+            cur_tok = TOK_LIST[T_IDX]
+
+            while cur_tok != leg_tok:
+                #print "legal_token:\t", leg_tok
+                print "Match skipping:", cur_tok
+                Increm()
+                cur_tok = TOK_LIST[T_IDX]
+
+            #T_IDX -= 1
+            print "parsing resuming at:", TOK_LIST[T_IDX], '\n' 
+           
+    # print token Match worked
+    VIEWER.match_show(leg_tok)
 
     # view recursion
     VIEWER.outa("Match")
@@ -194,11 +240,7 @@ def AddOp(op):
         ProcessOp(op)
         Match("MinusOp")          
     else:
-        try:
-            raise Exception(TOK_LIST[T_IDX])
-        except Exception as ex:
-            print "SyntaxError(", ex[0], ")"
-            raise
+        print "SyntaxError(", TOK_LIST[T_IDX], ")"
 
     VIEWER.outa("AddOp")
 
@@ -226,17 +268,15 @@ def Primary(result):
         ProcessLiteral(result)              # added for generator
         Match("IntLiteral")
     else:
-        try:
-            raise Exception(TOK_LIST[T_IDX])
-        except Exception as ex:
-            print "SyntacticError(", ex[0], ")"
-            raise
+        print "SyntaxError(", TOK_LIST[T_IDX], ")"
 
     VIEWER.outa("Primary")
 
 # recursive part JUST WORKS FOR ADDITION!
 def Expression(Result):                               # now it takes ExprRec
     VIEWER.into("Expression")
+
+    CheckInput(set(['Id', 'IntLiteral', 'LParen']), set(['Comma', 'SemiColon', 'RParen']), set(['EndSym']))
 
     leftOperand = ExprRec("ERROR", "ERROR")           # make empty structs
     rightOperand = ExprRec("ERROR", "ERROR")
@@ -290,6 +330,8 @@ def Statement():
     identifier = ExprRec("ERROR", "ERROR")       # gen code struct
     expr = ExprRec("ERROR", "")                  # gen code struct
 
+    CheckInput(set(['Id', 'ReadSym', 'WriteSym']), set(['EndSym']), set(['EofSym']))
+
     next_tok = TOK_LIST[T_IDX]
     # populates expression_records structs
     # they are are stuffed with token values
@@ -312,17 +354,14 @@ def Statement():
         Match("RParen")
         Match("SemiColon")
     else:
-        try:
-            raise Exception(TOK_LIST[T_IDX])
-        except Exception as ex:
-            print "SyntaxError(", ex[0], ")"
-            raise
+        print "SyntaxError(", TOK_LIST[T_IDX], ")"
 
     VIEWER.outa("Statement")
 
 def StatementList():
     VIEWER.into("StatementList")
 
+    CheckInput(set(['Id', 'ReadSym', 'WriteSym']), set(['EndSym']), set(['EofSym']))
     Statement()
 
     next_tok = TOK_LIST[T_IDX]
@@ -335,6 +374,7 @@ def Program():
     VIEWER.into("Program")
 
     Start()
+    CheckInput(set(['BeginSym']), set(['EofSym']), set(['EofSym']))
     Match("BeginSym")
     StatementList()
     Match("EndSym")
@@ -547,7 +587,7 @@ def main():
     global CODE_STR, IDX, T_IDX, SEM_LIST, OUT_FILE_NAME
 
     # get file info
-    in_file_name = raw_input("type name of input file: ")
+    in_file_name = 'bad_input1.txt' #raw_input("type name of input file: ")
     fin = open(in_file_name, 'r')
     CODE_STR = fin.read() + EOF
 
@@ -570,8 +610,8 @@ def main():
     T_IDX = 0
 
     # show the token and semantics list from file
-    print "tokens", "\n", TOK_LIST
-    print '\n', "strings", "\n", SEM_LIST, '\n'
+    print "tokens:", "\n", TOK_LIST
+    print '\n', "strings:", "\n", SEM_LIST, '\n'
 
     # run the ad-hoc parser
     SystemGoal()

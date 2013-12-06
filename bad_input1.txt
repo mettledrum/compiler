@@ -1,0 +1,6 @@
+BEGIN
+A := BB -
+C := 342 - BB
+E :=DD + 23
+EEE := 67; ++++ - --baaad
+END
